@@ -37,13 +37,13 @@ repositories {
         url 'http://dvs1.progwml6.com/files/maven'
     }
     maven {
-        name "IC2"
-        url "http://maven.ic2.player.to/"
+        name "Curse Maven"
+        url "http://cursemaven.com"
     }
 }
 
 dependencies {
-    compile 'net.industrial-craft:industrialcraft-2:2.8.27-ex112:dev'
+    compile 'curse.maven:ic2-242638:3838713'
     deobfCompile "mezz.jei:jei_1.12.2:4.8.0.+"
     //compile fileTree(dir: 'libs', include: ['*.jar'])
 }
@@ -60,9 +60,6 @@ minecraft {
     runDir = "run"
 }
 
-// CompactSolars uses git tagging to mark major versions. This sets up the project version to that version data
-def versionInfo = getGitVersion()
-version = "${project.minecraft.version}-${versionInfo['CompactSolars.version']}"
 
 
 
@@ -96,15 +93,6 @@ processResources
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }
-
-	// generate version.properties file from the git version data earlier
-	doLast {
-		def propsFile = new File(destinationDir, 'version.properties')
-		def properties = new Properties()
-		properties.putAll(versionInfo)
-		properties['CompactSolars.build.mcversion'] = project.minecraft.version
-		properties.store(propsFile.newWriter(), null)
-	}
 }
 
 // this sets our output jar to have a 'tag' of 'universal' on it
@@ -175,35 +163,4 @@ uploadArchives {
             }
         }
     }
-}
-
-// This is a special task for pulling the version information from git and the environment (for BUILD_NUMBER)
-def getGitVersion()
-{
-	def out = [:]
-
-	// call git command.
-	def outStream = new ByteArrayOutputStream()
-	def result = exec {
-		executable = 'git'
-		args = [ 'describe', '--long', "--match=[^(jenkins)]*"]
-		standardOutput = outStream
-	}
-
-	def fullVersion = outStream.toString().trim()
-	def matcher = fullVersion =~ /(\d+).(\d+)-(\d+)-(.*)/
-
-	def maj = matcher[0][1]
-	def min = matcher[0][2]
-	def rev = matcher[0][3]
-	def bn = System.getenv("BUILD_NUMBER") ?: "1"
-
-	out['CompactSolars.build.major.number'] = maj.toString()
-	out['CompactSolars.build.minor.number'] = min.toString()
-	out['CompactSolars.build.revision.number'] = rev.toString()
-	out['CompactSolars.build.githash'] = matcher[0][4].toString()
-	out['CompactSolars.build.number' ] = bn.toString()
-	out['CompactSolars.version' ] = "${maj}.${min}.${rev}.${bn}".toString()
-
-	return out
 }
