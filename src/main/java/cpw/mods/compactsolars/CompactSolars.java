@@ -118,13 +118,14 @@ public class CompactSolars
     public void init(FMLInitializationEvent init)
     {
         NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
+        CompactSolarType.generateRecipes(compactSolarBlock);
+        CompactSolarType.generateHatRecipes(compactSolarBlock);
     }
 
     @EventHandler
     public void postInit(FMLPostInitializationEvent postinit)
     {
-        CompactSolarType.generateRecipes(compactSolarBlock);
-        CompactSolarType.generateHatRecipes(compactSolarBlock);
+
     }
 
     @EventHandler
